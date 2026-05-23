@@ -121,9 +121,9 @@ $img = '/assets/img/teebeepfp.png';
             <div>
               <p class="panel-label">CS lootbox</p>
               <h3>Rain.gg</h3>
-              <p>Visit Rain.gg for jackpot-style lootbox drops and community matches. This tab links out to Rain.gg where Teebee participates in CS-style drops.</p>
+              <p>Visit the dedicated Rain.gg info page to learn how the platform works, find safety tips, and see how Teebee uses it during streams.</p>
             </div>
-            <a class="button button-primary" href="https://rain.gg" target="_blank" rel="noreferrer">Open Rain.gg</a>
+            <a class="button button-primary" href="/rain.php" target="_self" rel="noreferrer">Open Rain.gg page</a>
           </article>
         </div>
       </section>

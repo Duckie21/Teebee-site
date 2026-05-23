@@ -6,13 +6,13 @@
   --bg: #07070a;
   --bg-soft: #101117;
   --card: rgba(14, 15, 21, 0.9);
-  --card-border: rgba(255, 193, 58, 0.2);
+  --card-border: rgba(168, 85, 247, 0.25);
   --text: #f5f7ff;
   --muted: #a8afc4;
-  --gold: #ffbe3d;
-  --gold-strong: #ff9f1c;
+  --gold: #b794f6;
+  --gold-strong: #a855f7;
   --green: #6dff8d;
-  --honey: #ffd966;
+  --honey: #d8b4fe;
   --shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
   --radius: 28px;
 }
@@ -26,9 +26,9 @@ body {
   min-height: 100vh;
   font-family: "Inter", system-ui, sans-serif;
   background:
-    radial-gradient(circle at top left, rgba(255, 190, 61, 0.14), transparent 30%),
+    radial-gradient(circle at top left, rgba(168, 85, 247, 0.14), transparent 30%),
     radial-gradient(circle at 85% 18%, rgba(109, 255, 141, 0.1), transparent 24%),
-    radial-gradient(circle at right 20%, rgba(255, 159, 28, 0.14), transparent 28%),
+    radial-gradient(circle at right 20%, rgba(168, 85, 247, 0.14), transparent 28%),
     linear-gradient(180deg, #06070a 0%, #101219 100%);
   color: var(--text);
 }
@@ -58,13 +58,13 @@ body::before {
 .ambient-left {
   top: -10rem;
   left: -12rem;
-  background: rgba(255, 190, 61, 0.52);
+  background: rgba(168, 85, 247, 0.45);
 }
 
 .ambient-right {
   bottom: -10rem;
   right: -12rem;
-  background: rgba(109, 255, 141, 0.22);
+  background: rgba(168, 85, 247, 0.18);
 }
 
 .page-shell {
@@ -150,8 +150,8 @@ body::before {
 
 .button-primary {
   color: #171717;
-  background: linear-gradient(135deg, #ffd76c 0%, #ffb12d 55%, #ffa11f 100%);
-  box-shadow: 0 12px 30px rgba(255, 174, 43, 0.32);
+  background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 55%, #c4b5fd 100%);
+  box-shadow: 0 12px 30px rgba(168, 85, 247, 0.35);
 }
 
 .button-secondary {
@@ -196,10 +196,10 @@ body::before {
   border-radius: 26px;
   overflow: hidden;
   background:
-    radial-gradient(circle at top, rgba(255, 190, 61, 0.2), transparent 36%),
-    radial-gradient(circle at 78% 20%, rgba(109, 255, 141, 0.08), transparent 22%),
-    linear-gradient(180deg, rgba(255, 190, 61, 0.06), rgba(255, 255, 255, 0.02));
-  border: 1px solid rgba(255, 190, 61, 0.18);
+    radial-gradient(circle at top, rgba(168, 85, 247, 0.22), transparent 36%),
+    radial-gradient(circle at 78% 20%, rgba(168, 85, 247, 0.1), transparent 22%),
+    linear-gradient(180deg, rgba(168, 85, 247, 0.08), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(168, 85, 247, 0.22);
 }
 
 .hero-art::before,
@@ -226,7 +226,7 @@ body::before {
   height: 100%;
   border-radius: 28px;
   object-fit: cover;
-  border: 1px solid rgba(255, 214, 107, 0.24);
+  border: 1px solid rgba(196, 181, 253, 0.28);
   box-shadow: 0 22px 50px rgba(0, 0, 0, 0.38);
 }
 
@@ -234,7 +234,7 @@ body::before {
   position: absolute;
   inset: -14px;
   border-radius: 34px;
-  background: radial-gradient(circle, rgba(255, 190, 61, 0.16), transparent 68%);
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.18), transparent 68%);
   filter: blur(8px);
   z-index: -1;
 }
@@ -252,7 +252,7 @@ body::before {
 .hive-ring {
   position: absolute;
   border-radius: 50%;
-  border: 1px solid rgba(255, 190, 61, 0.2);
+  border: 1px solid rgba(168, 85, 247, 0.22);
 }
 
 .hive-ring-one {
@@ -336,7 +336,7 @@ body::before {
 
 .tab-button.is-active {
   color: #161616;
-  background: linear-gradient(135deg, #ffd76c 0%, #ffb12d 55%, #ffa11f 100%);
+  background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 55%, #c4b5fd 100%);
   border-color: transparent;
 }
 
@@ -350,7 +350,7 @@ body::before {
   justify-content: space-between;
   gap: 18px;
   padding: 22px;
-  border-left: 3px solid rgba(255, 190, 61, 0.42);
+  border-left: 3px solid rgba(168, 85, 247, 0.45);
 }
 
 .tab-panel[hidden] {
