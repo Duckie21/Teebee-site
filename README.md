@@ -1,28 +1,29 @@
-# Teebee Site
+# Teebee Site (PHP)
 
-A one-page creator landing page for **Teebee** with a bee-themed visual identity and social tabs for:
+This repository now serves a small PHP landing page for **Teebee**. The site has a gambling/CS creator aesthetic and includes social tabs for Discord, X, Kick, YouTube and a Rain.gg link.
 
-- Discord
-- X
-- Kick
-- YouTube
+Structure
+- `index.php` — main PHP page (uses asset paths below)
+- `assets/css/styles.css` — styles
+- `assets/js/script.js` — tab behavior + keyboard support
+- `assets/img/IMG_6945.php` — serves the profile PNG stored at the project root (`IMG_6945.png`)
 
-## How to use
+How to run (XAMPP / Apache + PHP)
 
-1. Open `index.html` in your browser, or
-2. Serve the folder with your preferred local server.
+1. Make sure Apache + PHP are running (e.g., XAMPP). The project is already in `htdocs`.
+2. Open `http://localhost/Teebee-site/` in your browser — Apache will serve `index.php`.
 
-## Customize links
+Notes on images and assets
 
-Update the social URLs in `index.html`:
+- The repo contains the original `IMG_6945.png` in the project root. To avoid binary duplication the image is served via `assets/img/IMG_6945.php` which proxys the file and adds cache headers.
+- If you prefer the raw PNG moved into the `assets/img/` folder, move `IMG_6945.png` into `assets/img/` and delete (or update) `assets/img/IMG_6945.php` accordingly.
 
-- `https://discord.gg/your-invite`
-- `https://x.com/yourhandle`
-- `https://kick.com/yourchannel`
-- `https://youtube.com/@yourchannel`
+Customization
 
-## Notes
+- Social links are defined as PHP variables at the top of `index.php` for easy editing.
+- Swap those URLs with real profiles or other destinations as needed.
 
-- The page is static and does not require any dependencies.
-- It includes responsive styling and keyboard-friendly tabs.
+Accessibility & behavior
 
+- Tabs are keyboard-accessible (arrow navigation).
+- The page is responsive and intended for a dark, high-contrast style suitable for a gambling/CS creator.
