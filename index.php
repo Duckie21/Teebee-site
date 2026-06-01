@@ -148,6 +148,18 @@ $img = '/assets/img/teebeepfp.png';
         <div class="skin-item">
           <img src="/assets/img/karambitruby.png" alt="Karambit Ruby" loading="lazy" />
         </div>
+        <div class="skin-item">
+          <img src="/assets/img/bee.png" alt="Bee" loading="lazy" />
+        </div>
+        <div class="skin-item">
+          <img src="/assets/img/butterflyfade.png" alt="Butterfly Fade" loading="lazy" />
+        </div>
+        <div class="skin-item">
+          <img src="/assets/img/howl.png" alt="Howl" loading="lazy" />
+        </div>
+        <div class="skin-item">
+          <img src="/assets/img/m9crimson.png" alt="M9 Crimson" loading="lazy" />
+        </div>
       </div>
     </main>
 
