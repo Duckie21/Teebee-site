@@ -32,6 +32,7 @@ $img = '/assets/img/teebeepfp.png';
           <div class="cta-row">
             <a class="button button-primary" href="#tabs">Jump to socials</a>
             <a class="button button-secondary" href="#about">About the hive</a>
+            <a class="button button-secondary" href="/rain.php#leaderboard" style="text-decoration:none;">Leaderboard</a>
           </div>
 
           <div class="stats" aria-label="Creator highlights">
@@ -121,7 +122,7 @@ $img = '/assets/img/teebeepfp.png';
             <div>
               <p class="panel-label">CS lootbox</p>
               <h3>Rain.gg</h3>
-              <p>Visit the dedicated Rain.gg info page to learn how the platform works, find safety tips, and see how Teebee uses it during streams.</p>
+              <p>Visit the dedicated Rain.gg info page to learn how the platform works, find safety tips, view the leaderboard, and see how Teebee uses it during streams.</p>
             </div>
             <a class="button button-primary" href="/rain.php" target="_self" rel="noreferrer">Open Rain.gg page</a>
           </article>
@@ -136,6 +137,18 @@ $img = '/assets/img/teebeepfp.png';
         <p>Built to feel darker, cleaner, and more like a gambling/cs creator hub: bold contrast, gold accents, giveaway-forward socials, and a profile that stands out fast.</p>
         <p class="disclaimer">18+ only. If gambling is part of the content, keep it responsible and follow your local laws and platform rules.</p>
       </section>
+
+      <div class="skin-gallery">
+        <div class="skin-item">
+          <img src="/assets/img/awpdlore.png" alt="AWP Dragon Lore" loading="lazy" />
+        </div>
+        <div class="skin-item">
+          <img src="/assets/img/bluephosphor.png" alt="Blue Phosphor" loading="lazy" />
+        </div>
+        <div class="skin-item">
+          <img src="/assets/img/karambitruby.png" alt="Karambit Ruby" loading="lazy" />
+        </div>
+      </div>
     </main>
 
     <script src="/assets/js/script.js"></script>
