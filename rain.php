@@ -33,7 +33,6 @@ function fetchRainLeaderboard($apiUrl, $apiKey, $affiliateCode, $startDate, $end
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $error = curl_error($ch);
-    curl_close($ch);
 
     if ($error) {
         return ['error' => 'cURL error: ' . $error];
@@ -78,7 +77,7 @@ $yt = 'https://youtube.com/@teebee3016?si=WUtfHs0g0NQUOxxx';
 ?>
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Rain.gg — CS lootboxes, jackpots and where Teebee gambles. Learn how Rain.gg works and safety notes." />
@@ -86,8 +85,9 @@ $yt = 'https://youtube.com/@teebee3016?si=WUtfHs0g0NQUOxxx';
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/assets/css/styles.css" />
-  </head>
+
+    <link rel="stylesheet" href="/Teebee-site/assets/css/styles.css" />
+</head>
   <body>
     <div class="ambient ambient-left" aria-hidden="true"></div>
     <div class="ambient ambient-right" aria-hidden="true"></div>
@@ -117,7 +117,7 @@ $yt = 'https://youtube.com/@teebee3016?si=WUtfHs0g0NQUOxxx';
           </div>
 
           <aside style="text-align:center;">
-            <img src="/assets/img/rainbanner.png" alt="Rain.gg banner" style="max-width:100%;height:auto;border-radius:12px;"/>
+            <img src="/Teebee-site/assets/img/rainbanner.png" alt="Rain.gg banner" style="max-width:100%;height:auto;border-radius:12px;"/>
             <div style="margin-top:12px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
               <a class="button button-primary" href="https://rain.gg" target="_blank" rel="noreferrer">Open Rain.gg (official)</a>
               <a class="button button-secondary" href="/index.php" style="text-decoration:none;">Go to index</a>
@@ -179,7 +179,7 @@ $yt = 'https://youtube.com/@teebee3016?si=WUtfHs0g0NQUOxxx';
                 </td>
                 <td>
                   <span class="stat-value">
-                    <img class="currency-icon" src="/assets/img/rain-coin.svg" alt="Rain Coin" loading="lazy" width="20" height="20" decoding="async" />
+                    <img class="currency-icon" src="/Teebee-site/assets/img/rain-coin.svg" alt="Rain Coin" loading="lazy" width="20" height="20" decoding="async" />
                     <?php echo number_format(isset($entry['wagered']) ? $entry['wagered'] : 0, 2); ?>
                   </span>
                 </td>
@@ -187,7 +187,7 @@ $yt = 'https://youtube.com/@teebee3016?si=WUtfHs0g0NQUOxxx';
                   <?php $reward = isset($rewards[$rank]) ? $rewards[$rank] : 0; ?>
                   <?php if ($reward > 0): ?>
                     <div class="reward-badge">
-                      <img src="/assets/img/rain-coin.svg" alt="Coins" width="16" height="16" loading="lazy" decoding="async" />
+                      <img src="/Teebee-site/assets/img/rain-coin.svg" alt="Coins" width="16" height="16" loading="lazy" decoding="async" />
                       <span><?php echo $reward; ?> coins</span>
                     </div>
                   <?php else: ?>
