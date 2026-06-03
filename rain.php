@@ -1,20 +1,21 @@
 <?php
 $apiKey = 'f243f958-a6cf-4f10-83f4-493b9ae08f21';
-$affiliateCode = 'TEEBEE';
-$apiUrl = 'https://api.rain.gg/v1/affiliates/leaderboard';
-
-$startDate = date('Y-m-d\T00:00:00.00\Z', strtotime('first day of this month'));
-$endDate = date('Y-m-d\T23:59:59.00\Z', strtotime('last day of this month'));
+$apiUrl = 'https://api.rain.gg/v1/affiliates/races';
 
 $cacheFile = sys_get_temp_dir() . '/teebee_rain_leaderboard_cache.json';
-$cacheExpiry = 300; // 5 minutes
+$cacheExpiry = 5; // 5 seconds for live updates
 
-function fetchRainLeaderboard($apiUrl, $apiKey, $affiliateCode, $startDate, $endDate) {
+$forceRefresh = isset($_GET['refresh']) && $_GET['refresh'] === '1';
+$isApiRequest = isset($_GET['api']) && $_GET['api'] === '1';
+
+// Always force refresh for API requests to get latest data
+if ($isApiRequest) {
+    $forceRefresh = true;
+}
+
+function fetchRainLeaderboard($apiUrl, $apiKey) {
     $queryString = http_build_query([
-        'start_date' => $startDate,
-        'end_date' => $endDate,
-        'type' => 'wagered',
-        'code' => $affiliateCode
+        'participant_count' => 10
     ]);
 
     $fullUrl = $apiUrl . '?' . $queryString;
@@ -46,28 +47,58 @@ function fetchRainLeaderboard($apiUrl, $apiKey, $affiliateCode, $startDate, $end
 }
 
 $leaderboardData = null;
-if (file_exists($cacheFile) && time() - filemtime($cacheFile) < $cacheExpiry) {
+if (!$forceRefresh && file_exists($cacheFile) && time() - filemtime($cacheFile) < $cacheExpiry) {
     $leaderboardData = json_decode(file_get_contents($cacheFile), true);
 } else {
-    $leaderboardData = fetchRainLeaderboard($apiUrl, $apiKey, $affiliateCode, $startDate, $endDate);
+    $leaderboardData = fetchRainLeaderboard($apiUrl, $apiKey);
 
     if (!isset($leaderboardData['error'])) {
         file_put_contents($cacheFile, json_encode($leaderboardData));
     }
 }
 
-$entries = isset($leaderboardData['results']) ? array_slice($leaderboardData['results'], 0, 10) : [];
+// Extract participants from the first race result
+$entries = [];
+if (isset($leaderboardData['results']) && is_array($leaderboardData['results']) && count($leaderboardData['results']) > 0) {
+    $race = $leaderboardData['results'][0];
+    $entries = isset($race['participants']) ? array_slice($race['participants'], 0, 10) : [];
+}
 $hasError = isset($leaderboardData['error']);
 
-// Reward tiers by rank (coins)
-$rewards = [
-    1 => 100,
-    2 => 60,
-    3 => 30,
-    4 => 20,
-    5 => 10,
-    6 => 5,
-];
+// Try to detect race end time from common API fields and expose as ISO for JS
+$raceEndIso = '';
+if (!empty($race) && is_array($race)) {
+    $candidates = ['ends_at', 'end_at', 'end_time', 'endTime', 'end', 'ends_at_timestamp', 'end_timestamp', 'expires_at', 'expires_at_timestamp', 'scheduled_end'];
+    foreach ($candidates as $key) {
+        if (isset($race[$key]) && $race[$key]) {
+            $val = $race[$key];
+            // If numeric assume unix timestamp
+            if (is_numeric($val)) {
+                $raceEndIso = date(DATE_ATOM, (int)$val);
+            } else {
+                // try to normalize common formats; assume API returns ISO already
+                $raceEndIso = $val;
+            }
+            break;
+        }
+    }
+}
+
+// If API request, return JSON
+if ($isApiRequest) {
+    header('Content-Type: application/json');
+    header('Cache-Control: no-cache, no-store, must-revalidate');
+    header('Pragma: no-cache');
+    header('Expires: 0');
+    if ($hasError) {
+        echo json_encode(['error' => $leaderboardData['error']]);
+    } else {
+        echo json_encode([
+            'entries' => $entries
+        ]);
+    }
+    exit;
+}
 
 $home = '/';
 $discord = 'https://discord.gg/W8Cs9tMPvQ';
@@ -80,12 +111,12 @@ $yt = 'https://youtube.com/@teebee3016?si=WUtfHs0g0NQUOxxx';
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Rain.gg — CS lootboxes, jackpots and where Teebee gambles. Learn how Rain.gg works and safety notes." />
-    <title>Rain.gg — Teebee page</title>
+    <meta name="description" content="Teebee.gg - Check leaderboards and giveaways from the teebee community here" />
+    <title>Teebee.gg</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-
+    <link rel="icon" type="image/x-icon" href="/Teebee-site/assets/img/teebeepfp.png" />
     <link rel="stylesheet" href="/Teebee-site/assets/css/styles.css" />
 </head>
   <body>
@@ -93,54 +124,30 @@ $yt = 'https://youtube.com/@teebee3016?si=WUtfHs0g0NQUOxxx';
     <div class="ambient ambient-right" aria-hidden="true"></div>
 
     <main class="page-shell">
-      <section class="card tabs-section">
-        <div class="section-heading">
-          <p class="eyebrow">Teebee on Rain.gg</p>
-          <h2>Where the streams hit</h2>
-          <p class="lead">This is the Rain.gg spot for Teebee: the page that ties the stream setup, the official link, and the current leaderboard together in one place.</p>
-        </div>
 
-        <div class="card" style="margin-top:18px;padding:18px;display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start;">
-          <div>
-            <h3>What you’ll find here</h3>
-            <ul>
-              <li>The official Rain.gg button for quick access.</li>
-              <li>Teebee’s leaderboard with the current wagered rankings.</li>
-              <li>Links back to the main site if you want to bounce home fast.</li>
-            </ul>
-
-            <h3>Teebee setup</h3>
-            <p>Teebee runs Rain.gg during stream segments that match the purple bee theme and the CS/gambling vibe of the brand. It’s built to keep the focus on the live action and the current rankings.</p>
-
-            <h3>Quick note</h3>
-            <p>Use the official link if you’re heading there, and keep it responsible.</p>
-          </div>
-
-          <aside style="text-align:center;">
-            <img src="/Teebee-site/assets/img/rainbanner.png" alt="Rain.gg banner" style="max-width:100%;height:auto;border-radius:12px;"/>
-            <div style="margin-top:12px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <aside class="leaderboard-banner-wrap">
+            <img src="/Teebee-site/assets/img/rainbanner.png" alt="Rain.gg banner" class="leaderboard-banner"/>
+            <div class="leaderboard-actions">
               <a class="button button-primary" href="https://rain.gg" target="_blank" rel="noreferrer">Open Rain.gg (official)</a>
-              <a class="button button-secondary" href="/index.php" style="text-decoration:none;">Go to index</a>
-              <a class="button button-secondary" href="/" style="text-decoration:none;">Back home</a>
+              <a class="button button-secondary" href="/index.php">Back home</a>
             </div>
           </aside>
         </div>
 
-        <div style="margin-top:18px;" class="card">
-          <h3 style="margin:0 0 8px">Responsible play tips</h3>
-          <ul style="margin:0 0 12px">
-            <li>Set a strict budget before you join any drops or jackpots.</li>
-            <li>Don't chase losses — stop if you feel uncomfortable.</li>
-            <li>Use official, verified platforms and avoid sharing account credentials.</li>
-          </ul>
+      <?php if (!empty($raceEndIso)): ?>
+        <div style="display:flex;justify-content:center;margin:18px 0 0;">
+          <div id="leaderboard-countdown" class="leaderboard-countdown" data-ends-at="<?php echo htmlspecialchars($raceEndIso); ?>" aria-live="polite" aria-atomic="true">
+            <span class="countdown-label">Ends in</span>
+            <span class="countdown-time" aria-hidden="false"></span>
+          </div>
         </div>
-      </section>
+      <?php endif; ?>
 
       <section class="card tabs-section" style="margin-top: 24px;">
         <div class="section-heading">
           <p class="eyebrow">Rain.gg Affiliate Competition</p>
-          <h2>This Week's Leaderboard</h2>
-          <p>Top affiliates ranked by wagered amount. These are the buzz-worthy players in the Teebee hive on Rain.gg.</p>
+          <h2 class="animate-title">Hive Standings</h2>
+          <p> Track the swarm’s top performers as they battle for glory, bragging rights, and the sweetest spot on the board. 🍯✨</p>
         </div>
 
         <?php if ($hasError): ?>
@@ -152,55 +159,54 @@ $yt = 'https://youtube.com/@teebee3016?si=WUtfHs0g0NQUOxxx';
             <p>No affiliate data available yet. Check back soon!</p>
           </div>
         <?php else: ?>
-          <table class="leaderboard-table">
-            <thead>
-              <tr>
-                <th>Rank</th>
-                <th>Player</th>
-                <th>Total Wagered</th>
-                <th>Reward</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php foreach ($entries as $index => $entry): $rank = $index + 1; ?>
-              <tr>
-                <td>
-                  <span class="rank-badge rank-<?php echo $rank; ?>">
+          <?php if (!empty($raceEndIso)): ?>
+            <div id="leaderboard-countdown" class="leaderboard-countdown" data-ends-at="<?php echo htmlspecialchars($raceEndIso); ?>" aria-live="polite" aria-atomic="true">
+              <span class="countdown-label">Ends in</span>
+              <span class="countdown-time" aria-hidden="false"></span>
+            </div>
+          <?php endif; ?>
+          <div id="leaderboard-cards" class="leaderboard-cards-container">
+              <?php foreach ($entries as $index => $entry): $rank = $index + 1; $prize = isset($entry['prize']) ? $entry['prize'] / 100 : 0; ?>
+              <div class="leaderboard-card">
+                <div class="leaderboard-card-left">
+                  <span class="rank-badge rank-<?php echo $rank; ?> leaderboard-card-rank">
                     <?php echo htmlspecialchars($rank); ?>
                   </span>
-                </td>
-                <td>
-                  <div class="player-info">
-                    <div class="player-avatar">
-                      <img src="<?php echo htmlspecialchars(isset($entry['avatar']) ? $entry['avatar'] : 'https://cdn.rain.gg/images/avatar/unknown_small.png'); ?>" alt="<?php echo htmlspecialchars(isset($entry['username']) ? $entry['username'] : 'Unknown'); ?>" />
+                  <div class="leaderboard-card-player">
+                    <div class="player-avatar leaderboard-card-avatar">
+                      <img src="<?php echo htmlspecialchars(isset($entry['avatar']['small']) ? $entry['avatar']['small'] : 'https://cdn.rain.gg/images/avatar/unknown_small.png'); ?>" alt="<?php echo htmlspecialchars(isset($entry['username']) ? $entry['username'] : 'Unknown'); ?>" />
                     </div>
                     <strong><?php echo htmlspecialchars(isset($entry['username']) ? $entry['username'] : 'N/A'); ?></strong>
                   </div>
-                </td>
-                <td>
-                  <span class="stat-value">
-                    <img class="currency-icon" src="/Teebee-site/assets/img/rain-coin.svg" alt="Rain Coin" loading="lazy" width="20" height="20" decoding="async" />
-                    <?php echo number_format(isset($entry['wagered']) ? $entry['wagered'] : 0, 2); ?>
-                  </span>
-                </td>
-                <td class="reward-column">
-                  <?php $reward = isset($rewards[$rank]) ? $rewards[$rank] : 0; ?>
-                  <?php if ($reward > 0): ?>
-                    <div class="reward-badge">
-                      <img src="/Teebee-site/assets/img/rain-coin.svg" alt="Coins" width="16" height="16" loading="lazy" decoding="async" />
-                      <span><?php echo $reward; ?> coins</span>
-                    </div>
-                  <?php else: ?>
-                    <span class="muted">—</span>
-                  <?php endif; ?>
-                </td>
-              </tr>
+                </div>
+
+                <div class="leaderboard-card-right">
+                  <div class="leaderboard-stat-block">
+                    <p class="leaderboard-stat-label">Total Wagered</p>
+                    <span class="stat-value">
+                      <img class="currency-icon" src="/Teebee-site/assets/img/rain-coin.svg" alt="Rain Coin" loading="lazy" width="18" height="18" decoding="async" />
+                      <?php echo number_format(isset($entry['wagered']) ? $entry['wagered'] : 0, 2); ?>
+                    </span>
+                  </div>
+
+                  <div class="leaderboard-stat-block">
+                    <p class="leaderboard-stat-label">Reward</p>
+                    <?php if ($prize > 0): ?>
+                      <div class="leaderboard-reward-badge">
+                        <img src="/Teebee-site/assets/img/rain-coin.svg" alt="Coins" width="16" height="16" loading="lazy" decoding="async" />
+                        <span><?php echo number_format($prize); ?></span>
+                      </div>
+                    <?php else: ?>
+                      <span class="muted">—</span>
+                    <?php endif; ?>
+                  </div>
+                </div>
+              </div>
               <?php endforeach; ?>
-            </tbody>
-          </table>
+          </div>
         <?php endif; ?>
       </section>
     </main>
+    <script src="/Teebee-site/assets/js/script.js"></script>
   </body>
 </html>
-

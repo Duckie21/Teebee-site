@@ -10,13 +10,12 @@ $img = '/Teebee-site/assets/img/teebeepfp.png';
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Teebee — a bee-themed gambling and CS creator hub with Discord, X, Kick, and YouTube links." />
-    <title>Teebee | Hive &amp; Hustle</title>
+    <meta name="description" content="Teebee.gg — a bee-themed gambling and CS creator hub with Discord, X, Kick, and YouTube links." />
+    <title>Teebee.gg | Hive &amp; Hustle</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-
-    <!-- FIXED: Pointed stylesheet path directly inside the local XAMPP subfolder -->
+    <link rel="icon" type="image/x-icon" href="/Teebee-site/assets/img/teebeepfp.png" />
     <link rel="stylesheet" href="/Teebee-site/assets/css/styles.css" />
 </head>
 <body>
@@ -27,13 +26,13 @@ $img = '/Teebee-site/assets/img/teebeepfp.png';
     <section class="hero card">
         <div class="hero-copy">
             <p class="eyebrow">CS drops • giveaways • live chaos</p>
-            <h1>Teebee</h1>
-            <p class="lead">A bee-branded creator with a gambling and CS-style identity built around giveaways, live streams, and clipped moments from the hive.</p>
+             <h1 class="animate-title">Teebee</h1>
+            <p class="lead">Part-time risk taker, full-time highlight collector. Pollinating the internet with big plays and bigger payouts with a community that never stops buzzing
+                Or full time degen</p>
 
             <div class="cta-row">
                 <a class="button button-primary" href="#tabs">Jump to socials</a>
                 <a class="button button-secondary" href="#about">About the hive</a>
-                <!-- FIXED: Linked explicitly to the subfolder page routing -->
                 <a class="button button-secondary" href="/Teebee-site/rain.php#leaderboard" style="text-decoration:none;">Leaderboard</a>
             </div>
 
@@ -63,16 +62,16 @@ $img = '/Teebee-site/assets/img/teebeepfp.png';
             <div class="hive-ring hive-ring-two"></div>
             <div class="hive-card">
                 <p>Honey-fueled creator identity</p>
-                <h2>Buzz. Queue. Clip.</h2>
+                <h2>Buzz. Drive. Win.</h2>
             </div>
         </div>
     </section>
 
     <section class="card tabs-section" id="tabs">
         <div class="section-heading">
-            <p class="eyebrow">Social tabs</p>
-            <h2>Pick the channel you want</h2>
-            <p>Discord and X are for giveaways and updates, Kick is for streaming, and YouTube is for clips and highlights.</p>
+            <p class="eyebrow">Socials</p>
+            <h2 class="animate-title">Follow the Buzz</h2>
+            <p>Find the stream, join the discussion, and never miss a moment.</p>
         </div>
 
         <div class="tab-bar">
@@ -135,14 +134,13 @@ $img = '/Teebee-site/assets/img/teebeepfp.png';
     <section class="card about-section" id="about">
         <div>
             <p class="eyebrow">About Teebee</p>
-            <h2>A bee-themed creator with CS energy</h2>
+            <h2 class="animate-title">Our Honeycomb</h2>
         </div>
-        <p>Built to feel darker, cleaner, and more like a gambling/cs creator hub: bold contrast, gold accents, giveaway-forward socials, and a profile that stands out fast.</p>
-        <p class="disclaimer">18+ only. If gambling is part of the content, keep it responsible and follow your local laws and platform rules.</p>
+        <p>Driven by community, fueled by entertainment. From live streams to unforgettable wins, every moment is better when it’s shared with the people who made it happen.</p>
+        <p class="disclaimer">18+ only. If gambling is part of the content, <a href="https://www.gambleaware.org/" target="_blank" rel="noreferrer">keep it responsible</a> and follow your local laws and platform rules.</p>
     </section>
 
     <div class="skin-gallery">
-        <!-- FIXED: Repaired image links for fallback consistency inside the subfolder structure -->
         <div class="skin-item"><img src="/Teebee-site/assets/img/awpdlore.png" alt="AWP Dragon Lore" loading="lazy" /></div>
         <div class="skin-item"><img src="/Teebee-site/assets/img/bluephosphor.png" alt="Blue Phosphor" loading="lazy" /></div>
         <div class="skin-item"><img src="/Teebee-site/assets/img/karambitruby.png" alt="Karambit Ruby" loading="lazy" /></div>
@@ -152,8 +150,6 @@ $img = '/Teebee-site/assets/img/teebeepfp.png';
         <div class="skin-item"><img src="/Teebee-site/assets/img/m9crimson.png" alt="M9 Crimson" loading="lazy" /></div>
     </div>
 </main>
-
-<!-- FIXED: Patched script source link with the folder directory -->
 <script src="/Teebee-site/assets/js/script.js"></script>
 </body>
 </html>
