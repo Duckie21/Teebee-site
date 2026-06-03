@@ -159,12 +159,6 @@ $yt = 'https://youtube.com/@teebee3016?si=WUtfHs0g0NQUOxxx';
             <p>No affiliate data available yet. Check back soon!</p>
           </div>
         <?php else: ?>
-          <?php if (!empty($raceEndIso)): ?>
-            <div id="leaderboard-countdown" class="leaderboard-countdown" data-ends-at="<?php echo htmlspecialchars($raceEndIso); ?>" aria-live="polite" aria-atomic="true">
-              <span class="countdown-label">Ends in</span>
-              <span class="countdown-time" aria-hidden="false"></span>
-            </div>
-          <?php endif; ?>
           <div id="leaderboard-cards" class="leaderboard-cards-container">
               <?php foreach ($entries as $index => $entry): $rank = $index + 1; $prize = isset($entry['prize']) ? $entry['prize'] / 100 : 0; ?>
               <div class="leaderboard-card">
