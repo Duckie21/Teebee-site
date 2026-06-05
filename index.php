@@ -33,7 +33,8 @@ $img = '/Teebee-site/assets/img/teebeepfp.png';
             <div class="cta-row">
                 <a class="button button-primary" href="#tabs">Jump to socials</a>
                 <a class="button button-secondary" href="#about">About the hive</a>
-                <a class="button button-secondary" href="/Teebee-site/rain.php#leaderboard" style="text-decoration:none;">Leaderboard</a>
+                <a class="button button-secondary" href="/Teebee-site/rain.php" style="text-decoration:none;">Rain.gg</a>
+                <a class="button button-secondary" href="/Teebee-site/skinrave.php" style="text-decoration:none;">Skinrave</a>
             </div>
 
             <div class="stats" aria-label="Creator highlights">
@@ -80,6 +81,7 @@ $img = '/Teebee-site/assets/img/teebeepfp.png';
             <button class="tab-button" id="tab-kick" data-tab="kick">Kick</button>
             <button class="tab-button" id="tab-yt" data-tab="yt">YT</button>
             <button class="tab-button" id="tab-rain" data-tab="rain">Rain.gg</button>
+            <button class="tab-button" id="tab-skinrave" data-tab="skinrave">Skinrave</button>
         </div>
 
         <div class="tab-panels">
@@ -127,6 +129,15 @@ $img = '/Teebee-site/assets/img/teebeepfp.png';
                 </div>
                 <!-- FIXED: Linked explicitly to the subfolder page routing -->
                 <a class="button button-primary" href="/Teebee-site/rain.php" target="_self" rel="noreferrer">Open Rain.gg page</a>
+            </article>
+
+            <article class="tab-panel" id="panel-skinrave" data-panel="skinrave" hidden>
+                <div>
+                    <p class="panel-label">Free daily rewards</p>
+                    <h3>Skinrave</h3>
+                    <p>Check the Skinrave applicant feed, view the current banner, and jump into the dedicated rewards page.</p>
+                </div>
+                <a class="button button-primary" href="/Teebee-site/skinrave.php" target="_self" rel="noreferrer">Open Skinrave page</a>
             </article>
         </div>
     </section>

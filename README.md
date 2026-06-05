@@ -4,6 +4,7 @@ This repository now serves a small PHP landing page for **Teebee**. The site has
 
 Structure
 - `index.php` — main PHP page (uses asset paths below)
+- `skinrave.php` — dedicated Skinrave applicants page using `assets/img/Teebeeskinrave.png`
 - `assets/css/styles.css` — styles
 - `assets/js/script.js` — tab behavior + keyboard support
 - `assets/img/IMG_6945.php` — serves the profile PNG stored at the project root (`IMG_6945.png`)

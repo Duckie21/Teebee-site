@@ -762,6 +762,12 @@ body::before {
   border-radius: 12px;
 }
 
+.skinrave-banner {
+  width: min(100%, 560px);
+  margin: 0 auto;
+  display: block;
+}
+
 .leaderboard-actions {
   margin-top: 12px;
   display: flex;
