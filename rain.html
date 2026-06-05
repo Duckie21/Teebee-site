@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Teebee.gg Rain.gg leaderboard and affiliate competition." />
+    <title>Teebee.gg | Rain.gg</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/Teebee-site/assets/img/teebeepfp.png" />
+    <link rel="stylesheet" href="/Teebee-site/assets/css/styles.css" />
+</head>
+<body>
+<div class="ambient ambient-left" aria-hidden="true"></div>
+<div class="ambient ambient-right" aria-hidden="true"></div>
+
+<main class="page-shell">
+    <aside class="leaderboard-banner-wrap">
+        <img src="/Teebee-site/assets/img/rainbanner.png" alt="Rain.gg banner" class="leaderboard-banner" />
+        <div class="leaderboard-actions">
+            <a class="button button-primary" href="https://rain.gg" target="_blank" rel="noreferrer">Open Rain.gg (official)</a>
+            <a class="button button-secondary" href="/Teebee-site/index.html">Back home</a>
+        </div>
+    </aside>
+
+    <div style="display:flex;justify-content:center;margin:18px 0 0;">
+        <div id="leaderboard-countdown" class="leaderboard-countdown" style="display:none" aria-live="polite" aria-atomic="true">
+            <span class="countdown-label">Ends in</span>
+            <span class="countdown-time" aria-hidden="false"></span>
+        </div>
+    </div>
+
+    <section class="card tabs-section" style="margin-top: 24px;">
+        <div class="section-heading">
+            <p class="eyebrow">Rain.gg Affiliate Competition</p>
+            <h2 class="animate-title">Hive Standings</h2>
+            <p>Track the swarm’s top performers as they battle for glory, bragging rights, and the sweetest spot on the board. 🍯✨</p>
+        </div>
+
+        <div id="leaderboard-cards" class="leaderboard-cards-container">
+            <div class="empty-box">
+                <p>Loading leaderboard data...</p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+(function () {
+    var titleElements = document.querySelectorAll('.animate-title');
+
+    titleElements.forEach(function (titleEl) {
+        var text = titleEl.textContent;
+        titleEl.textContent = '';
+
+        text.split('').forEach(function (letter, index) {
+            var span = document.createElement('span');
+            span.textContent = letter === ' ' ? '\u00A0' : letter;
+            titleEl.appendChild(span);
+
+            requestAnimationFrame(function () {
+                span.style.animation = 'letterFade 0.8s ease-in-out ' + (index * 0.08) + 's both';
+            });
+        });
+    });
+}());
+</script>
+<script>
+(function () {
+    var apiUrl = '/Teebee-site/api/rain.php';
+    var cardsEl = document.getElementById('leaderboard-cards');
+    var countdownEl = document.getElementById('leaderboard-countdown');
+    var countdownTimeEl = countdownEl ? countdownEl.querySelector('.countdown-time') : null;
+    var countdownTimer = null;
+    var numberFormat = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function renderCards(entries) {
+        if (!cardsEl) {
+            return;
+        }
+
+        if (!entries.length) {
+            cardsEl.innerHTML = '<div class="empty-box"><p>No affiliate data available yet. Check back soon!</p></div>';
+            return;
+        }
+
+        cardsEl.innerHTML = entries.map(function (entry, index) {
+            var rank = index + 1;
+            var prize = Number(entry.prize || 0) / 100;
+            var avatar = (entry.avatar && entry.avatar.small) ? entry.avatar.small : 'https://cdn.rain.gg/images/avatar/unknown_small.png';
+            var username = entry.username || 'N/A';
+            var wagered = Number(entry.wagered || 0);
+
+            return '' +
+                '<div class="leaderboard-card">' +
+                    '<div class="leaderboard-card-left">' +
+                        '<span class="rank-badge rank-' + rank + ' leaderboard-card-rank">' + rank + '</span>' +
+                        '<div class="leaderboard-card-player">' +
+                            '<div class="player-avatar leaderboard-card-avatar">' +
+                                '<img src="' + escapeHtml(avatar) + '" alt="' + escapeHtml(username) + '" />' +
+                            '</div>' +
+                            '<strong>' + escapeHtml(username) + '</strong>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="leaderboard-card-right">' +
+                        '<div class="leaderboard-stat-block">' +
+                            '<p class="leaderboard-stat-label">Total Wagered</p>' +
+                            '<span class="stat-value"><img class="currency-icon" src="/Teebee-site/assets/img/rain-coin.svg" alt="Rain Coin" loading="lazy" width="18" height="18" decoding="async" />' +
+                                numberFormat.format(wagered) +
+                            '</span>' +
+                        '</div>' +
+                        '<div class="leaderboard-stat-block">' +
+                            '<p class="leaderboard-stat-label">Reward</p>' +
+                            (prize > 0 ? '<div class="leaderboard-reward-badge"><img src="/Teebee-site/assets/img/rain-coin.svg" alt="Coins" width="16" height="16" loading="lazy" decoding="async" /><span>' + prize.toLocaleString('en-US') + '</span></div>' : '<span class="muted">—</span>') +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+        }).join('');
+    }
+
+    function stopCountdown() {
+        if (countdownTimer) {
+            clearInterval(countdownTimer);
+            countdownTimer = null;
+        }
+    }
+
+    function startCountdown(endsAt) {
+        if (!countdownEl || !countdownTimeEl) {
+            return;
+        }
+
+        var endDate = new Date(endsAt);
+        if (isNaN(endDate.getTime())) {
+            countdownEl.style.display = 'none';
+            stopCountdown();
+            return;
+        }
+
+        countdownEl.style.display = 'inline-flex';
+
+        function update() {
+            var diff = Math.max(0, endDate - new Date());
+            if (diff <= 0) {
+                countdownEl.querySelector('.countdown-label').textContent = 'Ended';
+                countdownTimeEl.textContent = '';
+                stopCountdown();
+                return;
+            }
+
+            var days = Math.floor(diff / 86400000);
+            diff %= 86400000;
+            var hours = Math.floor(diff / 3600000);
+            diff %= 3600000;
+            var minutes = Math.floor(diff / 60000);
+            var seconds = Math.floor((diff % 60000) / 1000);
+
+            if (days > 0) {
+                countdownTimeEl.textContent = days + 'd ' + String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+            } else {
+                countdownTimeEl.textContent = String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+            }
+        }
+
+        update();
+        stopCountdown();
+        countdownTimer = setInterval(update, 1000);
+    }
+
+    async function refreshLeaderboard() {
+        try {
+            var response = await fetch(apiUrl + '?ts=' + Date.now(), { cache: 'no-store' });
+            var data = await response.json();
+
+            if (data.error) {
+                cardsEl.innerHTML = '<div class="error-box"><strong>Oops!</strong> Could not fetch leaderboard data. ' + escapeHtml(data.error) + '</div>';
+                return;
+            }
+
+            renderCards(Array.isArray(data.entries) ? data.entries : []);
+            if (data.endsAt) {
+                startCountdown(data.endsAt);
+            } else {
+                countdownEl.style.display = 'none';
+                stopCountdown();
+            }
+        } catch (error) {
+            cardsEl.innerHTML = '<div class="error-box"><strong>Oops!</strong> Could not fetch leaderboard data.</div>';
+        }
+    }
+
+    refreshLeaderboard();
+    setInterval(refreshLeaderboard, 10000);
+}());
+</script>
+</body>
+</html>

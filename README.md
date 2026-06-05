@@ -1,10 +1,14 @@
-# Teebee Site (PHP)
+# Teebee Site
 
-This repository now serves a small PHP landing page for **Teebee**. The site has a gambling/CS creator aesthetic and includes social tabs for Discord, X, Kick, YouTube and a Rain.gg link.
+This repository now serves a small landing page for **Teebee**. The site has a gambling/CS creator aesthetic and includes social tabs for Discord, X, Kick, YouTube, Rain.gg, and Skinrave.
 
 Structure
-- `index.php` — main PHP page (uses asset paths below)
-- `skinrave.php` — dedicated Skinrave applicants page using `assets/img/Teebeeskinrave.png`
+- `index.html` — main homepage
+- `rain.html` — Rain leaderboard page
+- `skinrave.html` — Skinrave applicants page using `assets/img/Teebeeskinrave.png`
+- `api/rain.php` — local proxy for the Rain API
+- `api/skinrave.php` — local proxy for the Skinrave API
+- `rain.php` / `skinrave.php` — legacy redirects to the HTML pages
 - `assets/css/styles.css` — styles
 - `assets/js/script.js` — tab behavior + keyboard support
 - `assets/img/IMG_6945.php` — serves the profile PNG stored at the project root (`IMG_6945.png`)
@@ -12,7 +16,7 @@ Structure
 How to run (XAMPP / Apache + PHP)
 
 1. Make sure Apache + PHP are running (e.g., XAMPP). The project is already in `htdocs`.
-2. Open `http://localhost/Teebee-site/` in your browser — Apache will serve `index.php`.
+2. Open `http://localhost/Teebee-site/` in your browser — Apache will serve `index.html`.
 
 Notes on images and assets
 
@@ -21,7 +25,7 @@ Notes on images and assets
 
 Customization
 
-- Social links are defined as PHP variables at the top of `index.php` for easy editing.
+- Social links are hardcoded in `index.html` for the static build.
 - Swap those URLs with real profiles or other destinations as needed.
 
 Accessibility & behavior
