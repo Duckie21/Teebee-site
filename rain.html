@@ -8,8 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="icon" type="image/x-icon" href="/Teebee-site/assets/img/teebeepfp.png" />
-    <link rel="stylesheet" href="/Teebee-site/css/styles.css" />
+    <link rel="icon" type="image/x-icon" href="/img/teebeepfp.png" />
+    <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body>
 <div class="ambient ambient-left" aria-hidden="true"></div>
@@ -17,10 +17,10 @@
 
 <main class="page-shell">
     <aside class="leaderboard-banner-wrap">
-        <img src="/Teebee-site/assets/img/rainbanner.png" alt="Rain.gg banner" class="leaderboard-banner" />
+        <img src="/img/rainbanner.png" alt="Rain.gg banner" class="leaderboard-banner" />
         <div class="leaderboard-actions">
             <a class="button button-primary" href="https://rain.gg" target="_blank" rel="noreferrer">Open Rain.gg (official)</a>
-            <a class="button button-secondary" href="/Teebee-site/index.html">Back home</a>
+            <a class="button button-secondary" href="/index.html">Back home</a>
         </div>
     </aside>
 
@@ -68,7 +68,7 @@
 </script>
 <script>
 (function () {
-    var apiUrl = '/Teebee-site/api/rain.php';
+    var apiUrl = '/api/rain.php';
     var cardsEl = document.getElementById('leaderboard-cards');
     var countdownEl = document.getElementById('leaderboard-countdown');
     var countdownTimeEl = countdownEl ? countdownEl.querySelector('.countdown-time') : null;
@@ -115,13 +115,13 @@
                     '<div class="leaderboard-card-right">' +
                         '<div class="leaderboard-stat-block">' +
                             '<p class="leaderboard-stat-label">Total Wagered</p>' +
-                            '<span class="stat-value"><img class="currency-icon" src="/Teebee-site/assets/img/rain-coin.svg" alt="Rain Coin" loading="lazy" width="18" height="18" decoding="async" />' +
+                            '<span class="stat-value"><img class="currency-icon" src="/img/rain-coin.svg" alt="Rain Coin" loading="lazy" width="18" height="18" decoding="async" />' +
                                 numberFormat.format(wagered) +
                             '</span>' +
                         '</div>' +
                         '<div class="leaderboard-stat-block">' +
                             '<p class="leaderboard-stat-label">Reward</p>' +
-                            (prize > 0 ? '<div class="leaderboard-reward-badge"><img src="/Teebee-site/assets/img/rain-coin.svg" alt="Coins" width="16" height="16" loading="lazy" decoding="async" /><span>' + prize.toLocaleString('en-US') + '</span></div>' : '<span class="muted">—</span>') +
+                            (prize > 0 ? '<div class="leaderboard-reward-badge"><img src="/img/rain-coin.svg" alt="Coins" width="16" height="16" loading="lazy" decoding="async" /><span>' + prize.toLocaleString('en-US') + '</span></div>' : '<span class="muted">—</span>') +
                         '</div>' +
                     '</div>' +
                 '</div>';
