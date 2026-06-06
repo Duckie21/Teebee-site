@@ -1,9 +1,19 @@
 <?php
-// Read Skinrave API URL from env to avoid exposing tokens in repo
-$apiUrl = getenv('SKINRAVE_API_URL') ?: 'https://api.skinrave.gg/affiliates/public/applicants?token=3e179631-fbe3-4865-ac74-8213a718a3ac&skip=0&take=10&order=DESC&from=2026-05-29T10:29:47.028Z&to=2026-06-05T10:29:47.028Z';
+// Require SKINRAVE_API_URL via environment variable to avoid committing tokens
+$apiUrl = getenv('SKINRAVE_API_URL') ?: null;
 $cacheFile = sys_get_temp_dir() . '/teebee_skinrave_api_cache.json';
 $cacheExpiry = (int) (getenv('SKINRAVE_CACHE_EXPIRY') ?: 60);
 $corsOrigin = getenv('CORS_ALLOW_ORIGIN') ?: '*';
+
+if (!$apiUrl) {
+    header('Content-Type: application/json');
+    header('Access-Control-Allow-Origin: ' . $corsOrigin);
+    header('Access-Control-Allow-Methods: GET, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type');
+    http_response_code(500);
+    echo json_encode(['error' => 'Missing SKINRAVE_API_URL environment variable']);
+    exit;
+}
 
 function skinraveFetchApplicants($apiUrl)
 {
