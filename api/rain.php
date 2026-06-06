@@ -1,11 +1,17 @@
 <?php
-$apiKey = 'f243f958-a6cf-4f10-83f4-493b9ae08f21';
-$apiUrl = 'https://api.rain.gg/v1/affiliates/races';
+// Use environment variables where possible to avoid committing secrets
+$apiKey = getenv('RAIN_API_KEY') ?: null;
+$apiUrl = getenv('RAIN_API_URL') ?: 'https://api.rain.gg/v1/affiliates/races';
 $cacheFile = sys_get_temp_dir() . '/teebee_rain_api_cache.json';
-$cacheExpiry = 5;
+$cacheExpiry = (int) (getenv('RAIN_CACHE_EXPIRY') ?: 60); // seconds
+$corsOrigin = getenv('CORS_ALLOW_ORIGIN') ?: '*';
 
 function fetchRainLeaderboard($apiUrl, $apiKey)
 {
+    if (!$apiKey) {
+        return ['error' => 'Missing RAIN API key'];
+    }
+
     $fullUrl = $apiUrl . '?' . http_build_query([
         'participant_count' => 10
     ]);
@@ -14,8 +20,9 @@ function fetchRainLeaderboard($apiUrl, $apiKey)
     curl_setopt($ch, CURLOPT_URL, $fullUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    // Enable proper SSL verification in production
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'accept: application/json',
         'x-api-key: ' . $apiKey
@@ -24,6 +31,7 @@ function fetchRainLeaderboard($apiUrl, $apiKey)
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $error = curl_error($ch);
+    curl_close($ch);
 
     if ($error) {
         return ['error' => 'cURL error: ' . $error];
@@ -34,7 +42,7 @@ function fetchRainLeaderboard($apiUrl, $apiKey)
     }
 
     $decoded = json_decode($response, true);
-    if (!is_array($decoded)) {
+    if (json_last_error() !== JSON_ERROR_NONE || !is_array($decoded)) {
         return ['error' => 'Invalid JSON response'];
     }
 
@@ -48,6 +56,7 @@ function detectRaceEndIso(array $race)
         if (isset($race[$key]) && $race[$key]) {
             $val = $race[$key];
             if (is_numeric($val)) {
+                // if epoch seconds, convert to ISO
                 return date(DATE_ATOM, (int) $val);
             }
             return $val;
@@ -59,27 +68,36 @@ function detectRaceEndIso(array $race)
 
 $leaderboardData = null;
 if (file_exists($cacheFile) && time() - filemtime($cacheFile) < $cacheExpiry) {
-    $leaderboardData = json_decode(file_get_contents($cacheFile), true);
+    $cachedRaw = @file_get_contents($cacheFile);
+    $cached = $cachedRaw ? json_decode($cachedRaw, true) : null;
+    if ($cached && json_last_error() === JSON_ERROR_NONE && is_array($cached)) {
+        $leaderboardData = $cached;
+    }
 }
 
 if (!is_array($leaderboardData)) {
     $leaderboardData = fetchRainLeaderboard($apiUrl, $apiKey);
     if (!isset($leaderboardData['error'])) {
-        file_put_contents($cacheFile, json_encode($leaderboardData));
+        // Use exclusive lock to avoid race writes
+        @file_put_contents($cacheFile, json_encode($leaderboardData), LOCK_EX);
     }
 }
 
+// Response headers (CORS configurable via env var)
 header('Content-Type: application/json');
 header('Cache-Control: no-cache, no-store, must-revalidate');
 header('Pragma: no-cache');
 header('Expires: 0');
-header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Origin: ' . $corsOrigin);
 header('Access-Control-Allow-Methods: GET, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204);
     exit;
 }
 
 if (isset($leaderboardData['error'])) {
+    http_response_code(500);
     echo json_encode(['error' => $leaderboardData['error']]);
     exit;
 }
