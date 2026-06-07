@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Teebee.gg combined leaderboards: Rain.gg and Skinrave." />
+    <title>Teebee.gg | Leaderboards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="img/teebeepfp.png" />
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+<div class="ambient ambient-left" aria-hidden="true"></div>
+<div class="ambient ambient-right" aria-hidden="true"></div>
+
+<main class="page-shell">
+    <div style="text-align:center;margin-top:18px;">
+        <a class="button button-secondary" href="index.html">Back home</a>
+    </div>
+
+    <div class="logo-switch" role="tablist" aria-label="Leaderboards">
+        <button id="tab-rain" class="logo-btn active" role="tab" aria-selected="true" aria-controls="section-rain">
+            <img src="img/rain-gg-original.png" alt="Rain" />
+            <span class="logo-label">RAIN</span>
+        </button>
+        <button id="tab-skinrave" class="logo-btn" role="tab" aria-selected="false" aria-controls="section-skinrave">
+            <img src="img/skinrave.png" alt="Skinrave" />
+            <span class="logo-label">SKINRAVE</span>
+        </button>
+    </div>
+
+    <aside class="leaderboard-banner-wrap">
+
+        <div class="leaderboard-actions" style="text-align:center;margin-top:8px;">
+            <a id="link-external" class="button button-primary" href="https://rain.gg" target="_blank" rel="noreferrer">Open Rain.gg (official)</a>
+        </div>
+    </aside>
+
+    <div style="display:flex;justify-content:center;margin:18px 0 0; max-width:560px; margin-left:auto; margin-right:auto;">
+        <div id="leaderboard-countdown" class="leaderboard-countdown" aria-live="polite" aria-atomic="true">
+            <span class="countdown-label">Leaderboards ends in</span>
+            <div class="countdown-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="64">
+                <div class="progress-bar" style="width:64%"></div>
+            </div>
+            <div class="countdown-segments" aria-hidden="false">
+                <div class="countdown-segment" id="cd-days"><div class="value">00</div><div class="unit">Days</div></div>
+                <div class="countdown-segment" id="cd-hours"><div class="value">00</div><div class="unit">Hours</div></div>
+                <div class="countdown-segment" id="cd-minutes"><div class="value">00</div><div class="unit">Minutes</div></div>
+                <div class="countdown-segment" id="cd-seconds"><div class="value">00</div><div class="unit">Seconds</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rain section -->
+    <section id="section-rain" class="card tabs-section leaderboard-section active" style="margin-top: 24px;">
+        <div class="section-heading">
+            <p class="eyebrow">Rain.gg Affiliate Competition</p>
+            <h2 class="animate-title">Hive Standings</h2>
+            <p>Track the swarm’s top performers as they battle for glory, bragging rights, and the sweetest spot on the board. 🍯✨</p>
+        </div>
+
+        <div id="rain-cards" class="leaderboard-cards-container">
+            <div class="empty-box"><p>Loading leaderboard data...</p></div>
+        </div>
+    </section>
+
+    <!-- Skinrave section -->
+    <section id="section-skinrave" class="card tabs-section leaderboard-section" style="margin-top: 24px;">
+        <div class="section-heading">
+            <p class="eyebrow">Skinrave affiliate applicants</p>
+            <h2 class="animate-title">Free Daily Rewards</h2>
+            <p>Latest applicants pulled from the Skinrave public affiliates endpoint.</p>
+            <p class="lead" style="margin-top: 14px;">Showing <span id="skinrave-filtered">0</span> of <span id="skinrave-total">0</span> applicants in the requested range.</p>
+        </div>
+
+        <div class="leaderboard-cards-container" id="skinrave-cards">
+            <div class="empty-box"><p>Loading Skinrave applicants...</p></div>
+        </div>
+    </section>
+
+</main>
+
+<script>
+(function () {
+    var titleElements = document.querySelectorAll('.animate-title');
+    titleElements.forEach(function (titleEl) {
+        var text = titleEl.textContent;
+        titleEl.textContent = '';
+        text.split('').forEach(function (letter, index) {
+            var span = document.createElement('span');
+            span.textContent = letter === ' ' ? '\u00A0' : letter;
+            titleEl.appendChild(span);
+            requestAnimationFrame(function () {
+                span.style.animation = 'letterFade 0.8s ease-in-out ' + (index * 0.08) + 's both';
+            });
+        });
+    });
+}());
+</script>
+
+<script>
+// Tab switching logic
+(function () {
+    var tabRain = document.getElementById('tab-rain');
+    var tabSkin = document.getElementById('tab-skinrave');
+    var sectionRain = document.getElementById('section-rain');
+    var sectionSkin = document.getElementById('section-skinrave');
+    var bannerRain = document.getElementById('banner-rain');
+    var bannerSkin = document.getElementById('banner-skinrave');
+    var linkExternal = document.getElementById('link-external');
+    function activateRain() {
+        tabRain.classList.add('active'); tabRain.setAttribute('aria-selected','true');
+        tabSkin.classList.remove('active'); tabSkin.setAttribute('aria-selected','false');
+        sectionRain.classList.add('active'); sectionSkin.classList.remove('active');
+        bannerRain.classList.remove('banner-hidden'); bannerSkin.classList.add('banner-hidden');
+        linkExternal.href = 'https://rain.gg'; linkExternal.textContent = 'Open Rain.gg (official)';
+        document.getElementById('leaderboard-countdown').style.display = '';
+        countdownEl.querySelector('.countdown-label').textContent = 'LEADERBOARDS ENDS IN';
+    }
+    function activateSkin() {
+        tabSkin.classList.add('active'); tabSkin.setAttribute('aria-selected','true');
+        tabRain.classList.remove('active'); tabRain.setAttribute('aria-selected','false');
+        sectionSkin.classList.add('active'); sectionRain.classList.remove('active');
+        bannerSkin.classList.remove('banner-hidden'); bannerRain.classList.add('banner-hidden');
+        linkExternal.href = 'https://skinrave.gg'; linkExternal.textContent = 'Open Skinrave';
+        document.getElementById('leaderboard-countdown').style.display = '';
+        countdownEl.querySelector('.countdown-label').textContent = 'SKINRAVE ENDS IN';
+        refreshSkinraveCountdown();
+    }
+    tabRain.addEventListener('click', activateRain);
+    tabSkin.addEventListener('click', activateSkin);
+
+    // Make banner images act like the tab buttons so clicking logos switches sections
+    if (bannerRain) {
+        bannerRain.style.cursor = 'pointer';
+        bannerRain.addEventListener('click', activateRain);
+    }
+    if (bannerSkin) {
+        bannerSkin.style.cursor = 'pointer';
+        bannerSkin.addEventListener('click', activateSkin);
+    }
+}());
+</script>
+
+<script>
+// Rain leaderboard script (adjusted IDs)
+(function () {
+    var apiUrl = 'api/rain.php';
+    var cardsEl = document.getElementById('rain-cards');
+    var countdownEl = document.getElementById('leaderboard-countdown');
+    var cdDaysEl = countdownEl ? document.getElementById('cd-days') : null;
+    var cdHoursEl = countdownEl ? document.getElementById('cd-hours') : null;
+    var cdMinutesEl = countdownEl ? document.getElementById('cd-minutes') : null;
+    var cdSecondsEl = countdownEl ? document.getElementById('cd-seconds') : null;
+    var countdownTimer = null;
+    var progressBarEl = countdownEl ? countdownEl.querySelector('.progress-bar') : null;
+    var numberFormat = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function renderCards(entries) {
+        if (!cardsEl) return;
+        if (!entries.length) {
+            cardsEl.innerHTML = '<div class="empty-box"><p>No affiliate data available yet. Check back soon!</p></div>';
+            return;
+        }
+        cardsEl.innerHTML = entries.map(function (entry, index) {
+            var rank = index + 1;
+            var prize = Number(entry.prize || 0) / 100;
+            var avatar = (entry.avatar && entry.avatar.small) ? entry.avatar.small : 'https://cdn.rain.gg/images/avatar/unknown_small.png';
+            var username = entry.username || 'N/A';
+            var wagered = Number(entry.wagered || 0);
+            return '' +
+                '<div class="leaderboard-card">' +
+                    '<div class="leaderboard-card-left">' +
+                        '<span class="rank-badge rank-' + rank + ' leaderboard-card-rank">' + rank + '</span>' +
+                        '<div class="leaderboard-card-player">' +
+                            '<div class="player-avatar leaderboard-card-avatar">' +
+                                '<img src="' + escapeHtml(avatar) + '" alt="' + escapeHtml(username) + '" />' +
+                            '</div>' +
+                            '<strong>' + escapeHtml(username) + '</strong>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="leaderboard-card-right">' +
+                        '<div class="leaderboard-stat-block">' +
+                            '<p class="leaderboard-stat-label">Total Wagered</p>' +
+                            '<span class="stat-value"><img class="currency-icon" src="img/rain-coin.svg" alt="Rain Coin" loading="lazy" width="18" height="18" decoding="async" />' +
+                                numberFormat.format(wagered) +
+                            '</span>' +
+                        '</div>' +
+                        '<div class="leaderboard-stat-block">' +
+                            '<p class="leaderboard-stat-label">Reward</p>' +
+                            (prize > 0 ? '<div class="leaderboard-reward-badge"><img src="img/rain-coin.svg" alt="Coins" width="16" height="16" loading="lazy" decoding="async" /><span>' + prize.toLocaleString('en-US') + '</span></div>' : '<span class="muted">—</span>') +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+        }).join('');
+    }
+
+    function stopCountdown() {
+        if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+    }
+    function pad(v){ return String(v).padStart(2,'0'); }
+    function updateSegment(el, value) {
+        if (!el) return;
+        var valEl = el.querySelector('.value');
+        if (!valEl) return;
+        if (valEl.textContent !== value) {
+            valEl.classList.remove('tick');
+            void valEl.offsetWidth;
+            valEl.textContent = value;
+            valEl.classList.add('tick');
+        }
+    }
+    function startCountdown(endsAt) {
+        if (!countdownEl) return;
+        var endDate = new Date(endsAt);
+        if (isNaN(endDate.getTime())) {
+            // show countdown container with unknown/empty values
+            countdownEl.style.display = '';
+            countdownEl.querySelector('.countdown-label').textContent = 'Ends unknown';
+            updateSegment(cdDaysEl, '00'); updateSegment(cdHoursEl, '00'); updateSegment(cdMinutesEl, '00'); updateSegment(cdSecondsEl, '00');
+            stopCountdown();
+            return;
+        }
+        var totalMs = Math.max(1, endDate - new Date());
+        countdownEl.style.display = '';
+        function update() {
+            var now = new Date();
+            var diff = Math.max(0, endDate - now);
+            if (diff <= 0) {
+                countdownEl.querySelector('.countdown-label').textContent = 'Ended';
+                updateSegment(cdDaysEl, '00'); updateSegment(cdHoursEl, '00'); updateSegment(cdMinutesEl, '00'); updateSegment(cdSecondsEl, '00');
+                if (progressBarEl) progressBarEl.style.width = '0%';
+                stopCountdown();
+                return;
+            }
+            var days = Math.floor(diff / 86400000); diff %= 86400000;
+            var hours = Math.floor(diff / 3600000); diff %= 3600000;
+            var minutes = Math.floor(diff / 60000);
+            var seconds = Math.floor((diff % 60000) / 1000);
+            updateSegment(cdDaysEl, pad(days)); updateSegment(cdHoursEl, pad(hours)); updateSegment(cdMinutesEl, pad(minutes)); updateSegment(cdSecondsEl, pad(seconds));
+            if (progressBarEl) {
+                var percent = Math.max(0, Math.min(100, Math.round((1 - (diff / totalMs)) * 100)));
+                progressBarEl.style.width = percent + '%';
+            }
+        }
+        update(); stopCountdown(); countdownTimer = setInterval(update, 1000);
+    }
+
+    async function refreshLeaderboard() {
+        try {
+            var response = await fetch(apiUrl + '?ts=' + Date.now(), { cache: 'no-store' });
+            var data = await response.json();
+            if (data.error) { cardsEl.innerHTML = '<div class="error-box"><strong>Oops!</strong> Could not fetch leaderboard data. ' + escapeHtml(data.error) + '</div>'; return; }
+            renderCards(Array.isArray(data.entries) ? data.entries : []);
+            if (data.endsAt) startCountdown(data.endsAt); else { if (countdownEl) { countdownEl.style.display = ''; countdownEl.querySelector('.countdown-label').textContent = 'Ends unknown'; if (typeof updateSegment === 'function') { updateSegment(cdDaysEl,'00'); updateSegment(cdHoursEl,'00'); updateSegment(cdMinutesEl,'00'); updateSegment(cdSecondsEl,'00'); } } stopCountdown(); }
+        } catch (error) {
+            cardsEl.innerHTML = '<div class="error-box"><strong>Oops!</strong> Could not fetch leaderboard data.</div>';
+        }
+    }
+
+    refreshLeaderboard();
+    setInterval(refreshLeaderboard, 10000);
+}());
+</script>
+
+<script>
+// Skinrave script (adjusted to coexist)
+(function () {
+    var apiUrl = 'api/skinrave.php';
+    var payouts = {1:100,2:65,3:50,4:35,5:25,6:15,7:10};
+    var cardsEl = document.getElementById('skinrave-cards');
+    var filteredEl = document.getElementById('skinrave-filtered');
+    var totalEl = document.getElementById('skinrave-total');
+    var numberFormat = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function renderCards(entries) {
+        if (!cardsEl) return;
+        if (!entries.length) { cardsEl.innerHTML = '<div class="empty-box"><p>No Skinrave applicants were returned for this time window.</p></div>'; return; }
+        cardsEl.innerHTML = entries.map(function (entry, index) {
+            var user = entry.user || {};
+            var username = user.username || 'Unknown';
+            var avatar = user.avatarUrl || 'https://avatars.steamstatic.com/ee6f3e2b5cc32b7c5f8f3cb9a0f0f1f2e8f3f5a0_full.jpg';
+            var level = user.level || 0;
+            var tier = user.levelTier || 'UNKNOWN';
+            var wagered = Number(entry.wagered || 0);
+            var rank = index + 1;
+            var prize = Object.prototype.hasOwnProperty.call(payouts, rank) ? payouts[rank] : null;
+            return '' +
+                '<article class="leaderboard-card">' +
+                    '<div class="leaderboard-card-left">' +
+                        '<span class="rank-badge ' + (rank <= 3 ? 'rank-' + rank : '') + ' leaderboard-card-rank">' + rank + '</span>' +
+                        '<div class="leaderboard-card-player">' +
+                            '<div class="player-avatar leaderboard-card-avatar">' +
+                                '<img src="' + escapeHtml(avatar) + '" alt="' + escapeHtml(username) + '" loading="lazy" />' +
+                            '</div>' +
+                            '<div>' +
+                                '<strong>' + escapeHtml(username) + '</strong>' +
+                                '<div style="margin-top: 4px; color: var(--muted); font-size: 0.92rem;">Level ' + escapeHtml(level) + ' &middot; ' + escapeHtml(tier) + '</div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="leaderboard-card-right">' +
+                        '<div class="leaderboard-stat-block">' +
+                            '<p class="leaderboard-stat-label">Wagered</p>' +
+                            '<span class="stat-value">' + numberFormat.format(wagered) + '</span>' +
+                        '</div>' +
+                        (prize !== null ? (
+                            '<div class="leaderboard-stat-block">' +
+                                '<p class="leaderboard-stat-label">Prize</p>' +
+                                '<span class="stat-value">' + prize + '</span>' +
+                            '</div>'
+                        ) : '') +
+                    '</div>' +
+                '</article>';
+        }).join('');
+    }
+
+    function refreshSkinrave() {
+        fetch('api/skinrave.php', { cache: 'no-store' })
+            .then(function (response) {
+                return response.text();
+            })
+            .then(function (text) {
+                var data = JSON.parse(text);
+                if (filteredEl) filteredEl.textContent = data.filteredCount || 0;
+                if (totalEl) totalEl.textContent = data.totalCount || 0;
+                if (data.endsAt) {
+                    window.skinraveEndsAt = data.endsAt;
+                }
+                renderCards(Array.isArray(data.list) ? data.list : []);
+            })
+            .catch(function (e) {
+                cardsEl.innerHTML = '<div class="error-box" style="margin-top: 18px;"><strong>Oops!</strong> Could not fetch Skinrave data.</div>';
+            });
+    }
+
+    window.refreshSkinraveCountdown = function() {
+        if (!window.skinraveEndsAt || !window.startCountdown) return;
+        window.startCountdown(window.skinraveEndsAt);
+    };
+
+    refreshSkinrave();
+    setInterval(refreshSkinrave, 10000);
+}());
+</script>
+
+</body>
+</html>

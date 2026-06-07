@@ -266,12 +266,41 @@ function startLeaderboardCountdown() {
       if (!segEl) return;
       const valEl = segEl.querySelector('.value');
       if (!valEl) return;
-      if (valEl.textContent !== value) {
-        valEl.textContent = value;
-        // tick the segment
-        segEl.classList.remove('tick');
-        void segEl.offsetWidth;
-        segEl.classList.add('tick');
+      if (valEl.textContent === value) return;
+
+      // Smooth number-only animation: fade out, update, fade in on the number element only.
+      try {
+        if (valEl._anim && valEl._anim.cancel) valEl._anim.cancel();
+
+        // Fade out (translate slightly for perception), no container changes
+        const fadeOut = valEl.animate([
+          { opacity: 1, transform: 'translateY(0)' },
+          { opacity: 0, transform: 'translateY(-4px)' }
+        ], { duration: 140, easing: 'cubic-bezier(.22,.9,.28,1)', fill: 'forwards' });
+
+        fadeOut.onfinish = function () {
+          valEl.textContent = value;
+          // Fade in smoothly
+          valEl._anim = valEl.animate([
+            { opacity: 0, transform: 'translateY(4px)' },
+            { opacity: 1, transform: 'translateY(0)' }
+          ], { duration: 240, easing: 'cubic-bezier(.22,.9,.28,1)', fill: 'forwards' });
+        };
+
+        valEl._anim = fadeOut;
+      } catch (e) {
+        // Fallback: quick opacity swap with requestAnimationFrame
+        valEl.style.transition = 'opacity 220ms cubic-bezier(.22,.9,.28,1), transform 220ms cubic-bezier(.22,.9,.28,1)';
+        valEl.style.opacity = '0';
+        valEl.style.transform = 'translateY(-4px)';
+        setTimeout(() => {
+          valEl.textContent = value;
+          valEl.style.opacity = '1';
+          valEl.style.transform = 'translateY(0)';
+          setTimeout(() => {
+            valEl.style.transition = '';
+          }, 260);
+        }, 140);
       }
     }
 

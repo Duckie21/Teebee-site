@@ -69,10 +69,18 @@ if (!is_array($leaderboardData)) {
     }
 }
 
+$corsOrigin = getenv('CORS_ALLOW_ORIGIN') ?: '*';
 header('Content-Type: application/json');
 header('Cache-Control: no-cache, no-store, must-revalidate');
 header('Pragma: no-cache');
 header('Expires: 0');
+header('Access-Control-Allow-Origin: ' . $corsOrigin);
+header('Access-Control-Allow-Methods: GET, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, x-api-key');
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204);
+    exit;
+}
 
 if (isset($leaderboardData['error'])) {
     echo json_encode(['error' => $leaderboardData['error']]);

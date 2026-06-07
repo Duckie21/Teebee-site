@@ -4,8 +4,8 @@ This repository now serves a small landing page for **Teebee**. The site has a g
 
 Structure
 - `index.html` — main homepage
-- `rain.html` — Rain leaderboard page
-- `skinrave.html` — Skinrave applicants page using `assets/img/Teebeeskinrave.png`
+- `leaderboards.html` — Combined Rain.gg + Skinrave leaderboards (use leaderboards.html)
+- `leaderboards.html` — Combined Rain.gg + Skinrave leaderboards (use leaderboards.html)
 - `api/rain.php` — local proxy for the Rain API
 - `api/skinrave.php` — local proxy for the Skinrave API
 - `rain.php` / `skinrave.php` — legacy redirects to the HTML pages
